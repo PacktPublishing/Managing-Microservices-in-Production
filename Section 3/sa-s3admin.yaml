@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2020-01-22T00:41:12Z"
+  name: s3-admin
+  namespace: section3
+  resourceVersion: "154287"
+  selfLink: /api/v1/namespaces/section3/serviceaccounts/s3-admin
+  uid: 92711b80-bc87-406b-b70b-f8feb778cb18
+secrets:
+- name: s3-admin-token-fzmt7

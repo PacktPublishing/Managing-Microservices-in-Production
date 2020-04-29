@@ -1,0 +1,10 @@
+version: "3.3"
+services:
+  db:
+    container_name: db1
+    image: microsoft/mssql-server-linux
+    ports:
+      - 1433:1433
+    environment: 
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Ch@ng3M3RightMeow

@@ -1,0 +1,60 @@
+apiVersion: v1
+data:
+  dashboardproviders.yaml: |
+    apiVersion: 1
+    providers:
+    - disableDeletion: false
+      folder: istio
+      name: istio
+      options:
+        path: /var/lib/grafana/dashboards/istio
+      orgId: 1
+      type: file
+    - disableDeletion: false
+      folder: kube-prometheus
+      name: kube-prometheus
+      options:
+        path: /var/lib/grafana/dashboards/kube-prometheus
+      type: file
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - access: proxy
+      editable: true
+      isDefault: true
+      jsonData:
+        timeInterval: 5s
+      name: Prometheus
+      orgId: 1
+      type: prometheus
+      url: http://prometheus:9090
+    - access: proxy
+      editable: true
+      isDefault: false
+      jsonData:
+        timeInterval: 5s
+      name: Prometheus-K8S
+      orgId: 1
+      type: prometheus
+      url: http://prometheus-k8s.monitoring:9090
+kind: ConfigMap
+metadata:
+  annotations:
+    install.operator.istio.io/chart-owner: AddonComponents
+  labels:
+    app: grafana
+    install.operator.istio.io/owner-group: install.istio.io
+    install.operator.istio.io/owner-kind: IstioOperator
+    install.operator.istio.io/owner-name: example-istiocontrolplane
+    istio: grafana
+    release: istio
+  name: istio-grafana
+  namespace: istio-system
+  ownerReferences:
+  - apiVersion: install.istio.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: IstioOperator
+    name: example-istiocontrolplane
+    uid: 1284265b-60f1-4016-aeeb-9fbe2e1ae2d6
+  selfLink: /api/v1/namespaces/istio-system/configmaps/istio-grafana

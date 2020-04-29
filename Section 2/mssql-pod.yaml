@@ -1,0 +1,66 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    creationTimestamp: "2019-11-29T05:02:31Z"
+    generateName: mssql-76f65698b8-
+    labels:
+      app: mssql
+      pod-template-hash: 76f65698b8
+    name: mssql-76f65698b8-sfn8w
+    namespace: default
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: mssql-76f65698b8
+      uid: 31cb5713-79ea-412b-be97-43653b299220
+    resourceVersion: "16601"
+    selfLink: /api/v1/namespaces/default/pods/mssql-76f65698b8-sfn8w
+    uid: 86b4fc16-cf24-48f7-ba5f-572e2af527de
+  spec:
+    containers:
+    - env:
+      - name: ACCEPT_EULA
+        value: "Y"
+      - name: SA_PASSWORD
+        value: <CREATEPASSWORD>
+      image: microsoft/mssql-server-linux
+      imagePullPolicy: Always
+      name: mssql
+      ports:
+      - containerPort: 1433
+        protocol: TCP
+      resources: {}
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: default-token-vfwzz
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: minikube
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext: {}
+    serviceAccount: default
+    serviceAccountName: default
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: default-token-vfwzz
+      secret:
+        defaultMode: 420
+        secretName: default-token-vfwzz

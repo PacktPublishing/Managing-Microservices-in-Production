@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: "2019-12-05T23:55:39Z"
+  generation: 1
+  labels:
+    run: myredis
+  name: myredis
+  namespace: section2
+  resourceVersion: "20924"
+  selfLink: /apis/apps/v1/namespaces/section2/deployments/myredis
+  uid: 722ff29e-6ad9-401e-bd69-0f022a0b958e
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      run: myredis
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: myredis
+    spec:
+      containers:
+      - image: redis
+        imagePullPolicy: Always
+        name: myredis
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

@@ -1,0 +1,335 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    install.operator.istio.io/chart-owner: AddonComponents
+  labels:
+    app: grafana
+    install.operator.istio.io/owner-group: install.istio.io
+    install.operator.istio.io/owner-kind: IstioOperator
+    install.operator.istio.io/owner-name: example-istiocontrolplane
+    release: istio
+  name: grafana
+  namespace: istio-system
+  ownerReferences:
+  - apiVersion: install.istio.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: IstioOperator
+    name: example-istiocontrolplane
+    uid: 1284265b-60f1-4016-aeeb-9fbe2e1ae2d6
+  selfLink: /apis/extensions/v1beta1/namespaces/istio-system/deployments/grafana
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: grafana
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      creationTimestamp: null
+      labels:
+        app: grafana
+        chart: grafana
+        heritage: Tiller
+        release: istio-system
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+            weight: 2
+          - preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - ppc64le
+            weight: 2
+          - preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - s390x
+            weight: 2
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - ppc64le
+                - s390x
+      containers:
+      - env:
+        - name: GRAFANA_PORT
+          value: "3000"
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "false"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: Admin
+        - name: GF_PATHS_DATA
+          value: /data/grafana
+        image: grafana/grafana:6.5.2
+        imagePullPolicy: IfNotPresent
+        name: grafana
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 10m
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data/grafana
+          name: data
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/apiserver
+          name: grafana-dashboard-apiserver
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/cluster-total
+          name: grafana-dashboard-cluster-total
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/controller-manager
+          name: grafana-dashboard-controller-manager
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/k8s-resources-cluster
+          name: grafana-dashboard-k8s-resources-cluster
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/k8s-resources-namespace
+          name: grafana-dashboard-k8s-resources-namespace
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/k8s-resources-node
+          name: grafana-dashboard-k8s-resources-node
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/k8s-resources-pod
+          name: grafana-dashboard-k8s-resources-pod
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/k8s-resources-workload
+          name: grafana-dashboard-k8s-resources-workload
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/k8s-resources-workloads-namespace
+          name: grafana-dashboard-k8s-resources-workloads-namespace
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/kubelet
+          name: grafana-dashboard-kubelet
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/namespace-by-pod
+          name: grafana-dashboard-namespace-by-pod
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/namespace-by-workload
+          name: grafana-dashboard-namespace-by-workload
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/node-cluster-rsrc-use
+          name: grafana-dashboard-node-cluster-rsrc-use
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/node-rsrc-use
+          name: grafana-dashboard-node-rsrc-use
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/nodes
+          name: grafana-dashboard-nodes
+          readOnly: false
+          subPath: nodes.json
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/persistentvolumesusage
+          name: grafana-dashboard-persistentvolumesusage
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/pod-total
+          name: grafana-dashboard-pod-total
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/prometheus-remote-write
+          name: grafana-dashboard-prometheus-remote-write
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/prometheus
+          name: grafana-dashboard-prometheus
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/proxy
+          name: grafana-dashboard-proxy
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/scheduler
+          name: grafana-dashboard-scheduler
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/statefulset
+          name: grafana-dashboard-statefulset
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/kube-prometheus/workload-total
+          name: grafana-dashboard-workload-total
+          readOnly: false
+        - mountPath: /var/lib/grafana/dashboards/istio/citadel-dashboard.json
+          name: dashboards-istio-citadel-dashboard
+          readOnly: true
+          subPath: citadel-dashboard.json
+        - mountPath: /var/lib/grafana/dashboards/istio/galley-dashboard.json
+          name: dashboards-istio-galley-dashboard
+          readOnly: true
+          subPath: galley-dashboard.json
+        - mountPath: /var/lib/grafana/dashboards/istio/istio-mesh-dashboard.json
+          name: dashboards-istio-istio-mesh-dashboard
+          readOnly: true
+          subPath: istio-mesh-dashboard.json
+        - mountPath: /var/lib/grafana/dashboards/istio/istio-performance-dashboard.json
+          name: dashboards-istio-istio-performance-dashboard
+          readOnly: true
+          subPath: istio-performance-dashboard.json
+        - mountPath: /var/lib/grafana/dashboards/istio/istio-service-dashboard.json
+          name: dashboards-istio-istio-service-dashboard
+          readOnly: true
+          subPath: istio-service-dashboard.json
+        - mountPath: /var/lib/grafana/dashboards/istio/istio-workload-dashboard.json
+          name: dashboards-istio-istio-workload-dashboard
+          readOnly: true
+          subPath: istio-workload-dashboard.json
+        - mountPath: /var/lib/grafana/dashboards/istio/mixer-dashboard.json
+          name: dashboards-istio-mixer-dashboard
+          readOnly: true
+          subPath: mixer-dashboard.json
+        - mountPath: /var/lib/grafana/dashboards/istio/pilot-dashboard.json
+          name: dashboards-istio-pilot-dashboard
+          readOnly: true
+          subPath: pilot-dashboard.json
+        - mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+          name: config
+          subPath: datasources.yaml
+        - mountPath: /etc/grafana/provisioning/dashboards/dashboardproviders.yaml
+          name: config
+          subPath: dashboardproviders.yaml
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 472
+        runAsUser: 472
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana
+        name: config
+      - emptyDir: {}
+        name: data
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-citadel-dashboard
+        name: dashboards-istio-citadel-dashboard
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-galley-dashboard
+        name: dashboards-istio-galley-dashboard
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-istio-mesh-dashboard
+        name: dashboards-istio-istio-mesh-dashboard
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-istio-performance-dashboard
+        name: dashboards-istio-istio-performance-dashboard
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-istio-service-dashboard
+        name: dashboards-istio-istio-service-dashboard
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-istio-workload-dashboard
+        name: dashboards-istio-istio-workload-dashboard
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-mixer-dashboard
+        name: dashboards-istio-mixer-dashboard
+      - configMap:
+          defaultMode: 420
+          name: istio-grafana-configuration-dashboards-pilot-dashboard
+        name: dashboards-istio-pilot-dashboard
+      - configMap:
+          name: grafana-dashboard-apiserver
+        name: grafana-dashboard-apiserver
+      - configMap:
+          name: grafana-dashboard-cluster-total
+        name: grafana-dashboard-cluster-total
+      - configMap:
+          name: grafana-dashboard-controller-manager
+        name: grafana-dashboard-controller-manager
+      - configMap:
+          name: grafana-dashboard-k8s-resources-cluster
+        name: grafana-dashboard-k8s-resources-cluster
+      - configMap:
+          name: grafana-dashboard-k8s-resources-namespace
+        name: grafana-dashboard-k8s-resources-namespace
+      - configMap:
+          name: grafana-dashboard-k8s-resources-node
+        name: grafana-dashboard-k8s-resources-node
+      - configMap:
+          name: grafana-dashboard-k8s-resources-pod
+        name: grafana-dashboard-k8s-resources-pod
+      - configMap:
+          name: grafana-dashboard-k8s-resources-workload
+        name: grafana-dashboard-k8s-resources-workload
+      - configMap:
+          name: grafana-dashboard-k8s-resources-workloads-namespace
+        name: grafana-dashboard-k8s-resources-workloads-namespace
+      - configMap:
+          name: grafana-dashboard-kubelet
+        name: grafana-dashboard-kubelet
+      - configMap:
+          name: grafana-dashboard-namespace-by-pod
+        name: grafana-dashboard-namespace-by-pod
+      - configMap:
+          name: grafana-dashboard-namespace-by-workload
+        name: grafana-dashboard-namespace-by-workload
+      - configMap:
+          name: grafana-dashboard-node-cluster-rsrc-use
+        name: grafana-dashboard-node-cluster-rsrc-use
+      - configMap:
+          name: grafana-dashboard-node-rsrc-use
+        name: grafana-dashboard-node-rsrc-use
+      - configMap:
+          name: grafana-dashboard-nodes
+        name: grafana-dashboard-nodes
+      - configMap:
+          name: grafana-dashboard-persistentvolumesusage
+        name: grafana-dashboard-persistentvolumesusage
+      - configMap:
+          name: grafana-dashboard-pod-total
+        name: grafana-dashboard-pod-total
+      - configMap:
+          name: grafana-dashboard-prometheus-remote-write
+        name: grafana-dashboard-prometheus-remote-write
+      - configMap:
+          name: grafana-dashboard-prometheus
+        name: grafana-dashboard-prometheus
+      - configMap:
+          name: grafana-dashboard-proxy
+        name: grafana-dashboard-proxy
+      - configMap:
+          name: grafana-dashboard-scheduler
+        name: grafana-dashboard-scheduler
+      - configMap:
+          name: grafana-dashboard-statefulset
+        name: grafana-dashboard-statefulset
+      - configMap:
+          name: grafana-dashboard-workload-total
+        name: grafana-dashboard-workload-total
