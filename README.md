@@ -35,9 +35,9 @@ Working knowledge of Node.js and TypeScript, as well as experience using a 'clou
 ### Technical Requirements
 This course has the following software requirements:<br/>
 For an optimal experience with hands-on labs and other practical activities, we recommend the following configuration:</br>
-●	Processor: Quad-core 2GHz+ CPU
-● Memory: 16 GB
-●	Storage: 250 GB
+●	Processor: Quad-core 2GHz+ CPU</br>
+● Memory: 16 GB</br>
+●	Storage: 250 GB</br>
 
 ### Software Requirements </br>
 ●	Operating system: Windows 10 or macOS X 10.11 and newer </br>
